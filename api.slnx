@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="api/api.csproj" />
+  <Project Path="BackgroundSaludo/BackgroundSaludo.csproj" Id="208d5355-d198-4013-aae7-5375ec62acbf" />
+  <Project Path="DesktopSaludo/DesktopSaludo.csproj" />
+  <Project Path="FrontendWeb/FrontendWeb.csproj" />
+  <Project Path="MobileSaludo/MobileSaludo.csproj" Id="49ecf730-e8d3-4832-a4f4-a0cd84c3fcba">
+    <Deploy Solution="Debug|*" />
+  </Project>
+</Solution>

@@ -1,0 +1,62 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Saludo";
+}
+
+<div class="container mt-4">
+    <h1>Consumir API de Saludo</h1>
+
+    <div class="mb-3">
+        <label for="nombre" class="form-label">Nombre</label>
+        <input type="text" id="nombre" class="form-control" placeholder="Ingresa tu nombre" />
+    </div>
+
+    <div class="mb-3">
+        <label for="idioma" class="form-label">Idioma</label>
+        <select id="idioma" class="form-select">
+            <option value="">Seleccione un idioma</option>
+            <option value="es">Español</option>
+            <option value="en">Inglés</option>
+            <option value="fr">Francés</option>
+        </select>
+    </div>
+
+    <button class="btn btn-primary" onclick="consumirApi()">Saludar</button>
+
+    <div class="mt-4">
+        <h3>Resultado:</h3>
+        <p id="resultado"></p>
+    </div>
+</div>
+
+<script>
+    async function consumirApi() {
+        const nombre = document.getElementById("nombre").value;
+        const idioma = document.getElementById("idioma").value;
+        const resultado = document.getElementById("resultado");
+
+        if (!nombre || !idioma) {
+            resultado.innerText = "Debes ingresar nombre y seleccionar idioma.";
+            return;
+        }
+
+        const url = `https://localhost:7191/api/saludo?idioma=${idioma}&nombre=${encodeURIComponent(nombre)}`;
+
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                const errorTexto = await response.text();
+                resultado.innerText = "Error: " + errorTexto;
+                return;
+            }
+
+            const data = await response.json();
+            resultado.innerText = data.mensaje;
+        } catch (error) {
+            resultado.innerText = "No se pudo conectar con la API.";
+            console.error(error);
+        }
+    }
+</script>
