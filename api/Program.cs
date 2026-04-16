@@ -1,8 +1,22 @@
+using api.Services;
+using api.Soap;
+using CoreWCF;
+using CoreWCF.Configuration;
+using CoreWCF.Description;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
+// REST services
+builder.Services.AddScoped<ILanguageService, LanguageService>();
+builder.Services.AddScoped<IGreetingService, GreetingService>();
+
+// SOAP / CoreWCF
+builder.Services.AddServiceModelServices();
+builder.Services.AddServiceModelMetadata();
+builder.Services.AddSingleton<IServiceBehavior, ServiceMetadataBehavior>();
 
 // CORS
 builder.Services.AddCors(options =>
@@ -17,19 +31,28 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();
-
-// 👇 ESTA LÍNEA ES CLAVE PARA CORS
 app.UseCors("PermitirFrontend");
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+// SOAP endpoint
+app.UseServiceModel(serviceBuilder =>
+{
+    serviceBuilder.AddService<GreetingSoapService>();
+    serviceBuilder.AddServiceEndpoint<GreetingSoapService, IGreetingSoapService>(
+        new BasicHttpBinding(),
+        "/Soap/GreetingService.svc");
+});
+
+var serviceMetadataBehavior = app.Services.GetRequiredService<ServiceMetadataBehavior>();
+serviceMetadataBehavior.HttpGetEnabled = true;
 
 app.Run();
